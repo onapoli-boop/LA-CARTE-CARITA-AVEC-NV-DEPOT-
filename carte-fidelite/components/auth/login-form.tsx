@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import Link from "next/link";
 import { login, type AuthFormState } from "@/lib/auth/actions";
 
@@ -8,6 +8,14 @@ const initialState: AuthFormState = undefined;
 
 export function LoginForm() {
   const [state, formAction, isPending] = useActionState(login, initialState);
+
+  useEffect(() => {
+    if (state?.redirectTo) {
+      // Navigation complète (pas router.push) : garantit que la requête
+      // suivante part bien avec le cookie de session tout juste posé.
+      window.location.href = state.redirectTo;
+    }
+  }, [state]);
 
   return (
     <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
