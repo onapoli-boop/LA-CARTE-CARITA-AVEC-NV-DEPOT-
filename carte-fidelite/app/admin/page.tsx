@@ -7,11 +7,23 @@ import { RecentActivityList } from "@/components/admin/recent-activity-list";
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
 
-  const [stats, recentActivity, promoRes] = await Promise.all([
-    getDashboardStats(),
-    getRecentActivity(),
-    supabase.from("promotions").select("title, description, is_active").order("created_at", { ascending: false }).limit(1).maybeSingle(),
-  ]);
+  let stats, recentActivity, promoRes;
+  try {
+    [stats, recentActivity, promoRes] = await Promise.all([
+      getDashboardStats(),
+      getRecentActivity(),
+      supabase.from("promotions").select("title, description, is_active").order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    ]);
+  } catch (err) {
+    const e = err as { message?: string; stack?: string };
+    return (
+      <div style={{ padding: 24, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>
+        <h2>Erreur (debug temporaire) — page admin</h2>
+        <p>message : {e?.message}</p>
+        <p>stack : {e?.stack}</p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
