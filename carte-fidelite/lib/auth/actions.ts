@@ -33,9 +33,9 @@ export async function login(
     .single();
 
   if (profileError) {
+    // DEBUG TEMPORAIRE : à retirer une fois le souci identifié.
     return {
-      error:
-        "Connexion réussie mais impossible de charger votre profil. Réessayez ou contactez le support.",
+      error: `DEBUG: ${profileError.code ?? "?"} - ${profileError.message}`,
     };
   }
 
