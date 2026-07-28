@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /*
+   * Valeurs de repli UNIQUEMENT — utilisées si un composant rend en dehors
+   * de [data-tenant-theme-root] (ex: page d'accueil de la plateforme elle-
+   * même, qui ne représente aucun commerçant). Ne jamais s'appuyer dessus
+   * pour les écrans client/admin d'un tenant : ceux-ci sont toujours sous
+   * app/[tenant]/layout.tsx et reçoivent les vraies valeurs en base.
+   */
+  --color-primary: #6b6b6b;
+  --color-secondary: #999999;
+  --color-background: #0b0906;
+  --color-text: #ffffff;
+  --font-heading: "Inter", serif;
+  --font-body: "Inter", sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+@keyframes ctaPulse {
+  0%, 100% {
+    box-shadow: 0 0 40px color-mix(in srgb, var(--color-primary) 45%, transparent),
+                inset 0 0 20px color-mix(in srgb, var(--color-primary) 15%, transparent);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 60px color-mix(in srgb, var(--color-primary) 75%, transparent),
+                inset 0 0 26px color-mix(in srgb, var(--color-primary) 25%, transparent);
+    transform: scale(1.035);
+  }
+}
