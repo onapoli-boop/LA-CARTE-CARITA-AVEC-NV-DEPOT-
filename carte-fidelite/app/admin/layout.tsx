@@ -1,3 +1,4 @@
+
 import { requireAdmin } from "@/lib/admin/guard";
 import { AdminNav } from "@/components/admin/admin-nav";
 
@@ -6,7 +7,21 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await requireAdmin();
+  try {
+    await requireAdmin();
+  } catch (err) {
+    const e = err as { digest?: string; message?: string; stack?: string };
+    if (e?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw err;
+    }
+    return (
+      <div style={{ padding: 24, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>
+        <h2>Erreur (debug temporaire) — requireAdmin</h2>
+        <p>message : {e?.message}</p>
+        <p>stack : {e?.stack}</p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
