@@ -140,6 +140,10 @@ export function LuckyWheel({
 
               const mid = start + segAngle / 2;
               const [tx, ty] = polar(mid, r * 0.62);
+              const fill = s.is_dark
+                ? "color-mix(in srgb, var(--color-background) 75%, #000)"
+                : "var(--color-primary)";
+              const textColor = s.is_dark ? "#fff" : "var(--color-background)";
               return (
                 <g key={s.id}>
                   <path d={`M${cx},${cy} L${x1},${y1} A${r},${r} 0 0 1 ${x2},${y2} Z`} fill={fill} />
