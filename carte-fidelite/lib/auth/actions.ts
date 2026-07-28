@@ -3,7 +3,10 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export type AuthFormState = { error?: string } | undefined;
+export type AuthFormState =
+  | { error?: string; redirectTo?: undefined }
+  | { redirectTo: string; error?: undefined }
+  | undefined;
 
 export async function login(
   _prevState: AuthFormState,
@@ -23,15 +26,29 @@ export async function login(
     return { error: "Email ou mot de passe incorrect." };
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", data.user.id)
     .single();
 
-  redirect(
-    profile?.role === "admin" || profile?.role === "superadmin" ? "/admin" : "/"
-  );
+  if (profileError) {
+    return {
+      error:
+        "Connexion réussie mais impossible de charger votre profil. Réessayez ou contactez le support.",
+    };
+  }
+
+  // Important : on ne fait pas `redirect()` ici. Sur certains runtimes serverless
+  // (dont Netlify), le cookie de session posé juste avant peut ne pas être
+  // pris en compte par la requête suivante si la redirection part du serveur
+  // dans le même aller-retour. On renvoie donc la destination au client, qui
+  // fait une navigation complète (voir login-form.tsx) : la requête suivante
+  // repart alors avec le cookie déjà bien enregistré dans le navigateur.
+  return {
+    redirectTo:
+      profile?.role === "admin" || profile?.role === "superadmin" ? "/admin" : "/",
+  };
 }
 
 /**
